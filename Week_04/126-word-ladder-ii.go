@@ -30,7 +30,7 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 
 	res := [][]string{}
 	queue := [][]int{[]int{idxMap[beginWord]}}
-	cost := make([]int, n)
+	cost := make([]int, n) //用于标识从begin word变化到指定word时的变化次数
 	for i := 0; i < n; i++ {
 		cost[i] = math.MaxInt32
 	}
@@ -47,7 +47,9 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 			res = append(res, tmp)
 		} else { //不然就还得加
 			for _, to := range edges[last] { //遍历最后一个单词能转换的所有单词
-				if cost[last]+1 <= cost[to] { //因为初始值是MaxInt32，如果一个单词没有被用过，这里肯定是to的值小于last的值
+				if cost[last]+1 <= cost[to] { //因为初始值是MaxInt32，如果一个单词没有被用过，这里肯定是to的值大于last的值
+					//如果cost[to]的值小于cost[last]+1，证明有其他更短的路径可以到cost[to]这个词，就不用再继续转到cost[to]路径
+					//如果cost[to]的值大于cost[last]+1，证明当前cost[to]路径是更短的路径，更新之
 					cost[to] = cost[last] + 1 //标记为已使用
 					tmp := make([]int, len(now))
 					copy(tmp, now)
