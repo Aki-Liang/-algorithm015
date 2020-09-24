@@ -34,7 +34,6 @@ func countSubstrings(s string) int {
 	//根据状态转移方程3，这里需要先遍历列
 	for n := 0; n < length; n++ {
 		for m := 0; m <= n; m++ {
-
 			if m == n { //状态转移方程1
 				dp[m][n] = true
 				count++
@@ -47,6 +46,34 @@ func countSubstrings(s string) int {
 			}
 		}
 	}
+	return count
+}
 
+// 降维
+// 使用一维数组，只需要保存上一列的情况
+func countSubstringsV2(s string) int {
+	count := 0
+	length := len(s)
+
+	dp := make([]bool, length)
+
+	//根据状态转移方程3，这里需要先遍历列
+	for n := 0; n < length; n++ {
+		for m := 0; m <= n; m++ {
+			if m == n { //状态转移方程1
+				dp[m] = true
+				count++
+			} else if n-m == 1 && s[m] == s[n] { //状态转移方程2
+				dp[m] = true
+				count++
+			} else if n-m > 1 && s[m] == s[n] && dp[m+1] { //状态转移方程3, 此时的dp[m+1]其实还是上一列的值
+				dp[m] = true
+				count++
+			} else {
+				//单维数组需要进行还原
+				dp[m] = false
+			}
+		}
+	}
 	return count
 }
