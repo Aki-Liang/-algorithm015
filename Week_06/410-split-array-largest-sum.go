@@ -25,8 +25,8 @@ func splitArray(nums []int, m int) int {
 		sub[i+1] = sub[i] + nums[i]
 	}
 
-	for i := 1; i < n; i++ {
-		for j := 1; j < min(i, m); j++ {
+	for i := 1; i <= n; i++ {
+		for j := 1; j <= min(i, m); j++ {
 			for x := 0; x < i; x++ {
 				dp[i][j] = min(dp[i][j], max(dp[x][j-1], sub[i]-sub[x]))
 			}
