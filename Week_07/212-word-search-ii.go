@@ -1,51 +1,59 @@
 package Week_07
 
-type TrieNode struct {
-	word     string
-	children [26]*TrieNode
+type Trie struct {
+	word string
+	next [26]*Trie
 }
 
 func findWords(board [][]byte, words []string) []string {
-	result := []string{}
-	root := &TrieNode{}
-	for _, w := range words {
+	res := []string{}
+	if len(board) == 0 || len(board[0]) == 0 {
+		return res
+	}
+	root := &Trie{}
+	for _, word := range words {
 		node := root
-		for _, c := range w {
-			if node.children[c-'a'] == nil {
-				node.children[c-'a'] = &TrieNode{}
+		for _, c := range word {
+			if node.next[c-'a'] == nil {
+				node.next[c-'a'] = &Trie{}
 			}
-			node = node.children[c-'a']
+			node = node.next[c-'a']
 		}
-		node.word = w
+		node.word = word
 	}
 
 	for i := 0; i < len(board); i++ {
-		for j := 0; j < len(board[0]); i++ {
-			dfsTrie(i, j, board, root, &result)
+		for j := 0; j < len(board[0]); j++ {
+			if root.next[board[i][j]-'a'] == nil {
+				continue
+			}
+			wDfs(i, j, board, root, &res)
 		}
 	}
-	return result
+
+	return res
 }
 
-func dfsTrie(i, j int, board [][]byte, node *TrieNode, result *[]string) {
-	if i < 0 || j < 0 || i == len(board) || j == len(board[0]) {
+func wDfs(i, j int, board [][]byte, node *Trie, res *[]string) {
+	if i < 0 || j < 0 || i >= len(board) || j >= len(board[0]) || board[i][j] == '#' {
 		return
 	}
+
 	c := board[i][j]
-	if c == '#' || node.children[c-'a'] == nil {
-		//访问过的节点或者字典中没有
+	if node.next[c-'a'] == nil {
 		return
 	}
-	node = node.children[c-'a']
+	node = node.next[c-'a']
 	if node.word != "" {
-		*result = append(*result, node.word)
+		*res = append(*res, node.word)
 		node.word = ""
 	}
 
 	board[i][j] = '#'
-	dfsTrie(i+1, j, board, node, result)
-	dfsTrie(i, j+1, board, node, result)
-	dfsTrie(i-1, j, board, node, result)
-	dfsTrie(i, j-1, board, node, result)
+	wDfs(i+1, j, board, node, res)
+	wDfs(i-1, j, board, node, res)
+	wDfs(i, j+1, board, node, res)
+	wDfs(i, j-1, board, node, res)
 	board[i][j] = c
+
 }
